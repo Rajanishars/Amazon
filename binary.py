@@ -1,3 +1,5 @@
+import collections
+
 # =====================================================================
 # PART 1: STRING COMPRESSION & DECOMPRESSION
 # =====================================================================
@@ -55,17 +57,61 @@ def isValidBST(root: TreeNode) -> bool:
     return validate(root)
 
 
+# Helper function to build a tree from user level-order array input
+def build_tree_from_list(nodes_list):
+    if not nodes_list or nodes_list[0] is None:
+        return None
+    
+    root = TreeNode(nodes_list[0])
+    queue = collections.deque([root])
+    i = 1
+    
+    while queue and i < len(nodes_list):
+        curr = queue.popleft()
+        
+        # Left Child
+        if i < len(nodes_list) and nodes_list[i] is not None:
+            curr.left = TreeNode(nodes_list[i])
+            queue.append(curr.left)
+        i += 1
+        
+        # Right Child
+        if i < len(nodes_list) and nodes_list[i] is not None:
+            curr.right = TreeNode(nodes_list[i])
+            queue.append(curr.right)
+        i += 1
+        
+    return root
+
+
 # =====================================================================
-# RUNNING YOUR SPECIFIC INPUT EXAMPLE
+# INTERACTIVE USER INPUT EXECUTION
 # =====================================================================
 if __name__ == "__main__":
-   
-    root = TreeNode(2)
-    root.left = TreeNode(1)
-    root.right = TreeNode(3)
+    print("=== STRING OPERATIONS ===")
+    user_str = input("Enter a string to compress (e.g., AAACCCBBD): ").strip()
+    comp = compress_string(user_str)
+    print(f"Compressed Output: {comp}")
+    print(f"Decompressed back: {decompress_string(comp)}\n")
 
-    # Validate and convert the boolean (True/False) to an integer (1/0)
-    result = isValidBST(root)
-    output = int(result)
-
-    print(f"Output: {output}")
+    print("=== BINARY SEARCH TREE (BST) VALIDATOR ===")
+    print("Enter tree nodes row-by-row (Level-Order) separated by spaces.")
+    print("Use 'None' or 'null' for missing/empty nodes.")
+    print("Example for your valid tree (2 / \\ 1 3), enter: 2 1 3")
+    
+    tree_input = input("Enter tree nodes: ").strip().split()
+    
+    # Parse input strings into integers or None
+    parsed_list = []
+    for item in tree_input:
+        if item.lower() in ["none", "null"]:
+            parsed_list.append(None)
+        else:
+            parsed_list.append(int(item))
+            
+    # Build the tree from the parsed list
+    root_node = build_tree_from_list(parsed_list)
+    
+    # Validate and display result as 1 or 0
+    is_bst = isValidBST(root_node)
+    print(f"Output: {int(is_bst)}")
